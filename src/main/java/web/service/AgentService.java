@@ -56,12 +56,12 @@ public class AgentService {
 
 
 
-    public Boolean createClient(String username,String nom, String prenom,
+
+    public Boolean createClient(String username, String nom, String prenom,
                                 String email, String numTel)
-            throws IOException, MessagingException, MessagingException {
+            throws IOException, MessagingException {
 
-        Client user=new Client();
-
+        Client user = new Client();
 
         user.setUsername(username);
         user.setNom(nom);
@@ -69,24 +69,25 @@ public class AgentService {
         user.setEmail(email);
         user.setNumTel(numTel);
 
-        String pass=this.genererPassword();
+        String pass = this.genererPassword();
         System.out.println(pass);
-        log.info("Password for Client generated: "+pass);
+        log.info("Password for Client generated: " + pass);
 
+        String pwd =passwordEncoder.encode(pass);
 
-        user.setPassword(passwordEncoder.encode(pass));
+        user.setPassword(pwd);
         clientRepository.save(user);
 
-      /*  String content="<h1> Hello Client "+ nom +" "+prenom+" and Welcome To JIBI  application.</h1> </br>" +
-                " <h3> please use these informations to Login to your Account: </h3>" +
+        String content = "<h1>Hello Client " + nom + " " + prenom + " and Welcome To JIBI application.</h1> </br>" +
+                "<h3>Please use these informations to log in to your account:</h3>" +
                 "<ul>" +
-                "<li style='color:blue;'> User Name :  "+email+" </li> " +
-                "<li style='color:blue;'> Password : "+pass+" </li> " +
+                "<li style='color:blue;'>Username: " + username + "</li>" +
+                "<li style='color:blue;'>Password: " + pass + "</li>" +
                 "</ul>";
-        emailService.sendEmail(email,content);
-        System.out.println("Mail Sent Successfully Agent Service");*/
-        return  true;
+        emailService.sendEmail(email, "Welcome to JIBI", content);
+        System.out.println("Mail Sent Successfully from Client Service");
 
+        return true;
     }
 
     public Client getClient(String numTel) {

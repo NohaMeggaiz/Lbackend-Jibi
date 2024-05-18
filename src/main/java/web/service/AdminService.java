@@ -1,5 +1,6 @@
 package web.service;
 
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,9 @@ public class AdminService {
 
     @Autowired
     private final AgentRepo agentRepo;
+
+    @Autowired
+    private final EmailService emailService;
 
 
     final String letterLower = "abcdefghijklmnopqrstuvwxyz";
@@ -74,12 +78,13 @@ public class AdminService {
         return uid;
     }
 
+
     public Boolean createAgent(String nom, String prenom, String pieceIdentite,
                                String numPieceIdentite, Date dateNaissance, String adresse, String email,
                                String numTel, String numMatriculation,
                                String numPattente) throws IOException {
 
-        Agent agent=new Agent();
+        Agent agent = new Agent();
 
         agent.setNom(nom);
         agent.setPrenom(prenom);
@@ -94,21 +99,36 @@ public class AdminService {
         String uid = this.genererUid(email);
         agent.setUsername(uid);
 
+        String pass = this.genererPassword();
+        System.out.println("Password of agent " + pass);
+        log.info("Password of agent " + pass);
 
-        String pass=this.genererPassword();
-        System.out.println("Password of agent "+pass);
-        log.info("Password of agent "+pass);
-        //we need to encode it before setting it to agent here
-        // hnaya drt smiya okhra bax mayt overytax(overwritting 3la pass)
+        // Encode the password
         String encodedPassword = passwordEncoder.encode(pass);
         agent.setPassword(encodedPassword);
 
-        agentRepo.save(agent);
+        try {
+            agentRepo.save(agent);
 
+            String content = "<h1> Hello Agent " + nom + " " + prenom + " and Welcome To JIBI  application.</h1> </br>" +
+                    " <h3> please use these informations to log In to your Account: </h3>" +
+                    "<ul>" +
+                    "<li style='color:blue;'> User Name :  " + uid + " </li> " +
+                    "<li style='color:blue;'> Password : " + pass + " </li> " +
+                    "</ul>";
+            emailService.sendEmail(email, "Welcome to JIBI", content);
 
-        return  true;
+            return true;
+        } catch (MessagingException e) {
+            // Handle the exception (e.g., log it or take appropriate action)
+            e.printStackTrace(); // Example: print the stack trace
+            // Possibly inform the user about the failure
+            return false;
+        }
     }
 
+
+    //liste dyal gae Les agents
     public List<Agent> getAgents() {
         log.info("Fetching all agents by admin");
         return  agentRepo.findAll();
@@ -119,6 +139,22 @@ public class AdminService {
         return agentRepo.findByUsername(uid);
     }
 
+    public void deleteAgentByUid(String uid) {
+        log.info("Deleting agent with UID {}", uid);
+        Agent agent = agentRepo.findByUsername(uid);
+        if (agent != null) {
+            agentRepo.delete(agent);
+            log.info("Agent with UID {} deleted successfully", uid);
+        } else {
+            log.warn("Agent with UID {} not found", uid);
+        }
+    }
+
+
+
+
+
+    //hnaya les fonctions tae admin 3la les admins
     public List<Admin> getAdmins() {
         log.info("Fetching all Admins by admin");
 
@@ -137,6 +173,22 @@ public class AdminService {
 
         if (admin1 != null) return admin1;
         else return null;
+    }
+    public Admin getAdmin(Long id) {
+        log.info("Fetching admin with ID {}", id);
+        return adminRepo.findById(id).orElse(null);
+    }
+
+    public boolean deleteAdminById(Long id) {
+        log.info("Deleting admin with ID {}", id);
+        if (adminRepo.existsById(id)) {
+            adminRepo.deleteById(id);
+            log.info("Admin with ID {} deleted successfully", id);
+            return true;
+        } else {
+            log.warn("Admin with ID {} not found", id);
+            return false;
+        }
     }
 
 

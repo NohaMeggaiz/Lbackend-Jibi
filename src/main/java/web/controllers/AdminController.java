@@ -30,6 +30,7 @@ public class AdminController {
     @Autowired
     AdminRepo adminRepo;
 
+    //les fonctions li kidir admin 3la l'agent
     @PostMapping
     public ResponseEntity<?> createAgent(@RequestBody SignupRequestAgent agentRequest) throws IOException {
         // Check if the email already exists
@@ -60,7 +61,7 @@ public class AdminController {
         }
     }
 
-    @GetMapping
+    @GetMapping("/agents")
     public ResponseEntity<List<Agent>>  getAgents() {
         return ResponseEntity.ok().body(
                 adminserv.getAgents());
@@ -76,6 +77,19 @@ public class AdminController {
         }
         return ResponseEntity.ok(agent);
     }
+
+    @DeleteMapping("/agent/delete/{uid}")
+    public ResponseEntity<?> deleteAgent(@PathVariable String uid) {
+        try {
+            adminserv.deleteAgentByUid(uid);
+            return ResponseEntity.ok().body("Agent deleted successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error: Unable to delete agent.");
+        }
+    }
+
+
+    //les fonctions 3la admins
     @GetMapping("/admins")
     public ResponseEntity<List<Admin>> getAdmins() {
         return ResponseEntity.ok().body(adminserv.getAdmins());
@@ -105,6 +119,25 @@ public class AdminController {
         adminserv.saveAdmin(user);
 
         return ResponseEntity.ok("Admin registered successfully!");
+    }
+
+    @GetMapping("/getadmin/{id}")
+    public ResponseEntity<?> getAdmin(@PathVariable Long id) {
+        Admin admin = adminserv.getAdmin(id);
+        if (admin != null) {
+            return ResponseEntity.ok(admin);
+        } else {
+            return ResponseEntity.status(404).body("Error: Admin not found!");
+        }
+    }
+    @DeleteMapping("/deleteAdmin/{id}")
+    public ResponseEntity<?> deleteAdmin(@PathVariable Long id) {
+        boolean isDeleted = adminserv.deleteAdminById(id);
+        if (isDeleted) {
+            return ResponseEntity.ok().body("Admin deleted successfully.");
+        } else {
+            return ResponseEntity.status(404).body("Error: Admin not found!");
+        }
     }
 
 
