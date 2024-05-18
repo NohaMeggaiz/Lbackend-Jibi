@@ -1,10 +1,13 @@
 package web.controllers;
 
 
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import web.models.Admin;
 import web.models.Agent;
 import web.repositories.AdminRepo;
@@ -14,6 +17,7 @@ import web.request.SignupRequestAgent;
 import web.service.AdminService;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -31,36 +35,25 @@ public class AdminController {
     AdminRepo adminRepo;
 
     //les fonctions li kidir admin 3la l'agent
-    @PostMapping
-    public ResponseEntity<?> createAgent(@RequestBody SignupRequestAgent agentRequest) throws IOException {
-        // Check if the email already exists
-        if (agentRepo.existsByEmail(agentRequest.getEmail())) {
-            return ResponseEntity
-                    .badRequest()
-                    .body("Error: Email is already in use!");
-        }
-
-        // Proceed to create the agent if the email does not exist
-        boolean isCreated = adminserv.createAgent(
-                agentRequest.getNom(),
-                agentRequest.getPrenom(),
-                agentRequest.getPieceIdentite(),
-                agentRequest.getNumPieceIdentite(),
-                agentRequest.getDateNaissance(),
-                agentRequest.getAdresse(),
-                agentRequest.getEmail(),
-                agentRequest.getNumTel(),
-                agentRequest.getNumMatriculation(),
-                agentRequest.getNumPattente()
-        );
-
+    @PostMapping("/addAgent")
+    public ResponseEntity<?> registerAgent(@RequestParam("nom") String nom,
+                                           @RequestParam("prenom") String prenom,
+                                           @RequestParam("pieceIdentite") String pieceIdentite,
+                                           @RequestParam("numPieceIdentite") String numPieceIdentite,
+                                           @RequestParam("dateNaissance") @DateTimeFormat(pattern = "yyyy-MM-dd") Date dateNaissance,
+                                           @RequestParam("adresse") String adresse,
+                                           @RequestParam("email") String email,
+                                           @RequestParam("numTel") String numTel,
+                                           @RequestParam("numMatriculation") String numMatriculation,
+                                           @RequestParam("numPattente") String numPattente,
+                                           @RequestParam("file") MultipartFile file) throws IOException, MessagingException {
+        boolean isCreated = adminserv.createAgent(nom, prenom, pieceIdentite, numPieceIdentite, dateNaissance, adresse, email, numTel, numMatriculation, numPattente, file);
         if (isCreated) {
             return ResponseEntity.ok().body("Agent created successfully.");
         } else {
             return ResponseEntity.status(500).body("Error: Agent creation failed!");
         }
     }
-
     @GetMapping("/agents")
     public ResponseEntity<List<Agent>>  getAgents() {
         return ResponseEntity.ok().body(

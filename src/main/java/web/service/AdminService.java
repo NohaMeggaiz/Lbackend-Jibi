@@ -7,10 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import web.models.Admin;
 import web.models.Agent;
+import web.models.FileAgentStorage;
 import web.repositories.AdminRepo;
 import web.repositories.AgentRepo;
+import web.repositories.FileAgentStorageRepository;
 
 import java.io.IOException;
 import java.security.SecureRandom;
@@ -34,6 +37,9 @@ public class AdminService {
 
     @Autowired
     private final EmailService emailService;
+
+    @Autowired
+    private FileAgentStorageRepository fileAgentStorageRepository;
 
 
     final String letterLower = "abcdefghijklmnopqrstuvwxyz";
@@ -81,11 +87,10 @@ public class AdminService {
 
     public Boolean createAgent(String nom, String prenom, String pieceIdentite,
                                String numPieceIdentite, Date dateNaissance, String adresse, String email,
-                               String numTel, String numMatriculation,
-                               String numPattente) throws IOException {
+                               String numTel, String numMatriculation, String numPattente, MultipartFile file)
+            throws IOException, MessagingException {
 
         Agent agent = new Agent();
-
         agent.setNom(nom);
         agent.setPrenom(prenom);
         agent.setPieceIdentite(pieceIdentite);
@@ -107,24 +112,30 @@ public class AdminService {
         String encodedPassword = passwordEncoder.encode(pass);
         agent.setPassword(encodedPassword);
 
-        try {
-            agentRepo.save(agent);
+        // Save the file as a BLOB in the database
+        if (file != null && !file.isEmpty()) {
+            FileAgentStorage fileAgentStorage = new FileAgentStorage();
+            fileAgentStorage.setFileName(file.getOriginalFilename());
+            fileAgentStorage.setFileData(file.getBytes());
+            //here li zdt
+            fileAgentStorage.setAgentUsername(uid);
+            //..
+            fileAgentStorage = fileAgentStorageRepository.save(fileAgentStorage);
 
-            String content = "<h1> Hello Agent " + nom + " " + prenom + " and Welcome To JIBI  application.</h1> </br>" +
-                    " <h3> please use these informations to log In to your Account: </h3>" +
-                    "<ul>" +
-                    "<li style='color:blue;'> User Name :  " + uid + " </li> " +
-                    "<li style='color:blue;'> Password : " + pass + " </li> " +
-                    "</ul>";
-            emailService.sendEmail(email, "Welcome to JIBI", content);
-
-            return true;
-        } catch (MessagingException e) {
-            // Handle the exception (e.g., log it or take appropriate action)
-            e.printStackTrace(); // Example: print the stack trace
-            // Possibly inform the user about the failure
-            return false;
+            agent.setIdDocument(fileAgentStorage);
         }
+
+        agentRepo.save(agent);
+
+        String content = "<h1> Hello Agent " + nom + " " + prenom + " and Welcome To JIBI application.</h1> </br>" +
+                " <h3> please use these informations to log In to your Account: </h3>" +
+                "<ul>" +
+                "<li style='color:blue;'> User Name :  " + uid + " </li> " +
+                "<li style='color:blue;'> Password : " + pass + " </li> " +
+                "</ul>";
+        emailService.sendEmail(email, "Welcome to JIBI", content);
+
+        return true;
     }
 
 

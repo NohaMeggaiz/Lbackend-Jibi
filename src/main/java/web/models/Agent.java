@@ -53,4 +53,8 @@ public class Agent {
     @Column(name="numPattente",nullable = false)
     private String numPattente;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "file_id", referencedColumnName = "id")
+    private FileAgentStorage idDocument;
+
 }
