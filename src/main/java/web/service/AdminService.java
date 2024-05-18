@@ -3,6 +3,7 @@ package web.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import web.models.Admin;
@@ -25,7 +26,7 @@ public class AdminService {
     @Autowired
     private final AdminRepo adminRepo;
 
-    //private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
     private final AgentRepo agentRepo;
@@ -98,7 +99,9 @@ public class AdminService {
         System.out.println("Password of agent "+pass);
         log.info("Password of agent "+pass);
         //we need to encode it before setting it to agent here
-        agent.setPassword(pass);
+        // hnaya drt smiya okhra bax mayt overytax(overwritting 3la pass)
+        String encodedPassword = passwordEncoder.encode(pass);
+        agent.setPassword(encodedPassword);
 
         agentRepo.save(agent);
 
@@ -124,7 +127,9 @@ public class AdminService {
     public Admin saveAdmin(Admin admin) {
         log.info("Saving new admin {} to the database", admin.getUsername());
         //also here need to encode it later
-        admin.setPassword(admin.getPassword());
+        // Encode the password before saving the admin
+        String encodedPassword = passwordEncoder.encode(admin.getPassword());
+        admin.setPassword(encodedPassword);
         return adminRepo.save(admin);
     }
     public Admin checkAdminExists(String uid){
