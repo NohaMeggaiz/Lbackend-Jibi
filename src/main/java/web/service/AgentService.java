@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import web.models.Agent;
 import web.models.Client;
 import web.repositories.AgentRepo;
 import web.repositories.ClientRepository;
@@ -97,5 +98,19 @@ public class AgentService {
     public List<Client> getClients() {
         log.info("afficher tout les client par agent");
         return clientRepository.findAll();
+    }
+
+    public void changePassword(String uid, String newPassword) {
+        Agent agent = agentRepository.findByUsername(uid);
+        String encodedPassword = passwordEncoder.encode(newPassword);
+       // if(agent.getFirstAuth() == true){ agent.setFirstAuth(false);}
+        agent.setPassword(encodedPassword);
+        agentRepository.save(agent);
+    }
+
+
+    public List<Client> getAllClients() {
+        List<Client> users = clientRepository.findAll();
+        return users;
     }
 }

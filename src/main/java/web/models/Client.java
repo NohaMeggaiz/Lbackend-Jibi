@@ -47,4 +47,6 @@ public class Client {
     /*@Column(name="role")
     private String role = "ROLE_CLIENT";*/
 
+
+
 }

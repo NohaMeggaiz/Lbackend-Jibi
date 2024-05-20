@@ -1,15 +1,22 @@
 package web.controllers;
 
 import jakarta.mail.MessagingException;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import web.models.Client;
 import web.repositories.AdminRepo;
 import web.repositories.ClientRepository;
+import web.request.ChangePasswordAgentRequest;
+import web.request.CreateCompteRequest;
 import web.request.SignupRequestClient;
 import web.service.AgentService;
+import web.service.ClientService;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -18,6 +25,9 @@ public class AgentController {
 
     @Autowired
     private AdminRepo adminRepository;
+
+    @Autowired
+    ClientService userService;
 
     @Autowired
     private AgentService agentService;
@@ -29,11 +39,11 @@ public class AgentController {
     public ResponseEntity<?> registerClient(@RequestBody SignupRequestClient signupRequestClient)
             throws IOException, MessagingException {
 
-        // Check if username already exists
-        if (clientRepository.existsByUsername(signupRequestClient.getUsername())) {
+        // Check if numTel already exists
+        if (clientRepository.existsByNumTel(signupRequestClient.getNumTel())) {
             return ResponseEntity
                     .badRequest()
-                    .body("Error: Username is already taken!");
+                    .body("Error: NumTel is already in use!");
         }
 
         // Check if email already exists
@@ -57,5 +67,27 @@ public class AgentController {
         } else {
             return ResponseEntity.status(500).body("Error: Client creation failed!");
         }
+    }
+
+    @PostMapping("/changePassword")
+    public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordAgentRequest changePasswordRequestAgent){
+        agentService.changePassword(changePasswordRequestAgent.getUsername(),changePasswordRequestAgent.getNewPassword());
+
+        return ResponseEntity.ok("password changed successfully for Agent");
+    }
+
+
+    @PostMapping(value = "/createbankAccount",consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> createClientBankAccount(@Valid @RequestBody CreateCompteRequest createCompteRequest) throws IOException {
+
+        System.out.println("inside api : "+createCompteRequest.getTypecompte() +" ----"+createCompteRequest.getNumTel());
+        userService.createCompteToUser(createCompteRequest.getNumTel(),createCompteRequest.getTypecompte());
+        return ResponseEntity.ok().body("bank account has been created");
+    }
+
+    @GetMapping("/clients")
+    public ResponseEntity<List<Client>> AllClients() {
+        List<Client> users = agentService.getAllClients();
+        return ResponseEntity.ok(users);
     }
 }

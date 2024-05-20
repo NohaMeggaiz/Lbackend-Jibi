@@ -10,6 +10,9 @@ import web.models.Client;
 public interface ClientRepository extends JpaRepository<Client, Long> {
     Client findByEmail(String email);
     Client findByNumTel(String numTel);
+
+    boolean existsByNumTel(String numTel); // Add this method
+
     Boolean existsByUsername(String username);
     Boolean existsByEmail(String email);
 }
