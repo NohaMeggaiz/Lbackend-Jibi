@@ -13,6 +13,9 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
 
     boolean existsByNumTel(String numTel); // Add this method
 
-    Boolean existsByUsername(String username);
+  //  Boolean existsByUsername(String username);
     Boolean existsByEmail(String email);
+
+    void deleteByNumTel(String numTel);
+
 }

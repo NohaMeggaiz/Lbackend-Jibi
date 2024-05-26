@@ -58,13 +58,13 @@ public class AgentService {
 
 
 
-    public Boolean createClient(String username, String nom, String prenom,
+    public Boolean createClient(String nom, String prenom,
                                 String email, String numTel)
             throws IOException, MessagingException {
 
         Client user = new Client();
 
-        user.setUsername(username);
+      //  user.setUsername(username);
         user.setNom(nom);
         user.setPrenom(prenom);
         user.setEmail(email);
@@ -82,7 +82,7 @@ public class AgentService {
         String content = "<h1>Hello Client " + nom + " " + prenom + " and Welcome To JIBI application.</h1> </br>" +
                 "<h3>Please use these informations to log in to your account:</h3>" +
                 "<ul>" +
-                "<li style='color:blue;'>Username: " + username + "</li>" +
+                "<li style='color:blue;'>Username: " + numTel + "</li>" +
                 "<li style='color:blue;'>Password: " + pass + "</li>" +
                 "</ul>";
         emailService.sendEmail(email, "Welcome to JIBI", content);

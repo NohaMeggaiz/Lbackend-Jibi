@@ -57,4 +57,17 @@ public class Agent {
     @JoinColumn(name = "file_id", referencedColumnName = "id")
     private FileAgentStorage idDocument;
 
+
+    @Column(name="role")
+    private String role = "ROLE_AGENT";
+
+   // @Column(name="firstAuth",nullable = false)
+    //private Boolean firstAuth;
+
+    public Long getId_user() {
+        return id_agent;
+    }
+
+
+
 }

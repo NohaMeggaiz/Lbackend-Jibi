@@ -18,8 +18,9 @@ public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id_client;
-    @Column(name = "username",unique = true,nullable = false,updatable = false)
-    private String username;
+
+   // @Column(name = "username")
+    //private String username;
     @Column(name = "nom",nullable = false)
     private String nom;
 

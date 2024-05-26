@@ -85,4 +85,15 @@ public class ClientService {
         return true;
     }
 
+
+
+    @Transactional
+    public void deleteClientByNumTel(String numTel) {
+        if (userRepo.findByNumTel(numTel) !=null) {
+            userRepo.deleteByNumTel(numTel);
+        } else {
+            throw new RuntimeException("Client with numTel " + numTel + " not found");
+        }
+    }
 }
+
