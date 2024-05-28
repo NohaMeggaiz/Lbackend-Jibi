@@ -12,6 +12,7 @@ import web.models.Admin;
 import web.models.Agent;
 import web.repositories.AdminRepo;
 import web.repositories.AgentRepo;
+import web.request.AgentProjection;
 import web.request.SignupRequest;
 import web.request.SignupRequestAgent;
 import web.service.AdminService;
@@ -55,10 +56,17 @@ public class AdminController {
         }
     }
     @GetMapping("/agents")
-    public ResponseEntity<List<Agent>>  getAgents() {
-        return ResponseEntity.ok().body(
-                adminserv.getAgents());
+    public ResponseEntity<List<AgentProjection>>  getAgents() {
+        List<AgentProjection> users =  adminserv.getAgents();
+        return ResponseEntity.ok(users);
     }
+    /*
+      @GetMapping("/clients")
+    public ResponseEntity<List<Client>> AllClients() {
+        List<Agent> users =  adminserv.getAgents();
+        return ResponseEntity.ok(users);
+    }
+*/
 
     @GetMapping("/agent/{uid}")
     public ResponseEntity<?> getAgent(@PathVariable String uid) {

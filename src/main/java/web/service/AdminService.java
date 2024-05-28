@@ -14,6 +14,7 @@ import web.models.FileAgentStorage;
 import web.repositories.AdminRepo;
 import web.repositories.AgentRepo;
 import web.repositories.FileAgentStorageRepository;
+import web.request.AgentProjection;
 
 import java.io.IOException;
 import java.security.SecureRandom;
@@ -140,10 +141,17 @@ public class AdminService {
 
 
     //liste dyal gae Les agents
-    public List<Agent> getAgents() {
+  /*  public List<Agent> getAgents() {
         log.info("Fetching all agents by admin");
-        return  agentRepo.findAll();
+        List<Agent> users = agentRepo.findAll();
+        return   users;
+    }*/
+    public List<AgentProjection> getAgents() {
+        log.info("Fetching all agents by admin");
+        return agentRepo.findAllAgentsProjection();
     }
+
+
 
     public Agent getAgent(String uid) {
         log.info("Fetching agent by the admin {}", uid);
