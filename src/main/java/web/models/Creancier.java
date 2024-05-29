@@ -14,7 +14,7 @@ import lombok.Setter;
 
 public class Creancier {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_creancier;
 
     @Column(unique = true,nullable = false)
