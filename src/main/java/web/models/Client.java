@@ -45,8 +45,8 @@ public class Client {
     @JoinColumn(name="id_compte")
     private Compte compte;
 
-    /*@Column(name="role")
-    private String role = "ROLE_CLIENT";*/
+    @Column(name="role")
+    private String role = "ROLE_CLIENT";
 
 
 

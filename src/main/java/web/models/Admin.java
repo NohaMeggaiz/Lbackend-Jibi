@@ -28,4 +28,7 @@ public class Admin {
         this.password = password;
         this.email = email;
     }
+
+    @Column(name="role")
+    private String role = "ROLE_ADMIN";
 }
