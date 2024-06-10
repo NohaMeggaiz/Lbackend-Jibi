@@ -95,5 +95,32 @@ public class ClientService {
             throw new RuntimeException("Client with numTel " + numTel + " not found");
         }
     }
+
+    public double getCompteSolde(long idClient) {
+        Client client = userRepo.findById(idClient);
+        if (client == null) {
+            throw new RuntimeException("Client with ID " + idClient + " not found");
+        }
+        Compte compte = client.getCompte();
+        if (compte == null) {
+            throw new RuntimeException("Account for client with ID " + idClient + " not found");
+        }
+        return compte.getSolde();
+    }
+    public Client getClientById(long idClient) {
+        Client client = userRepo.findById(idClient);
+        if (client == null) {
+            throw new RuntimeException("Client with ID " + idClient + " not found");
+        }
+        return client;
+    }
+
+    public void changePassword(String numTel, String newPassword) {
+        Client client = userRepo.findByNumTel(numTel);
+        String encodedPassword = passwordEncoder.encode(newPassword);
+
+        client.setPassword(encodedPassword);
+        userRepo.save(client);
+    }
 }
 

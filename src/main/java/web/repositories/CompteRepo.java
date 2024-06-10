@@ -9,4 +9,6 @@ import web.models.Compte;
 public interface CompteRepo extends JpaRepository<Compte, Long> {
     Compte findByRib(String rib);
 
+
+
 }

@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Getter
 @Setter
@@ -24,5 +27,8 @@ public class Creancier {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="id_compte")
     private Compte compte_creancier;
+
+    @ManyToMany(mappedBy = "creanciers")
+    private Set<Transaction> transactions = new HashSet<>();
 
 }

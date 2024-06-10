@@ -1,6 +1,5 @@
 package web.service;
 
-
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,7 +8,6 @@ import web.models.Compte;
 import web.models.Creancier;
 import web.models.Transaction;
 import web.repositories.ClientRepository;
-import web.repositories.CompteRepo;
 import web.repositories.CreancierRepository;
 import web.repositories.TransactionRepository;
 
@@ -25,9 +23,6 @@ public class TransactionService {
 
     @Autowired
     private CreancierRepository creancierRepository;
-
-    @Autowired
-    private CompteRepo compteRepository;
 
     @Transactional
     public Transaction makeTransaction(String numTel, String creancierCode, double montant) {
@@ -48,12 +43,11 @@ public class TransactionService {
         clientCompte.setSolde(clientCompte.getSolde() - montant);
         creancierCompte.setSolde(creancierCompte.getSolde() + montant);
 
-        compteRepository.save(clientCompte);
-        compteRepository.save(creancierCompte);
+        // No need to save the account changes explicitly, as they will be cascaded.
 
         Transaction transaction = new Transaction();
-        transaction.setClient_source(client);
-        transaction.setCreancier_dest(creancier);
+        transaction.getClients().add(client);
+        transaction.getCreanciers().add(creancier);
         transaction.setMontant(montant);
         transaction.setDate_transaction(new Date());
 

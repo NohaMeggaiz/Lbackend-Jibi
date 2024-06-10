@@ -142,6 +142,11 @@ public class AgentController {
         }
     }
 
+    @GetMapping("/client")
+    public ResponseEntity<Client> getClient(String numTel) {
+        Client client = agentService.getClient(numTel);
+        return ResponseEntity.ok(client);
+    }
 }
 
 

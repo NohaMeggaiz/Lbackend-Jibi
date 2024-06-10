@@ -7,6 +7,9 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -48,6 +51,7 @@ public class Client {
     @Column(name="role")
     private String role = "ROLE_CLIENT";
 
-
+    @ManyToMany(mappedBy = "clients")
+    private Set<Transaction> transactions = new HashSet<>();
 
 }

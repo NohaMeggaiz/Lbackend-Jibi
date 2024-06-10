@@ -7,13 +7,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import web.request.LoginRequest;
 import web.responses.JwtAgentResponse;
 import web.responses.JwtResponse;
+import web.security.AdminDetails;
 import web.security.AgentDetails;
 import web.security.ClientDetails;
 import web.security.JwtUtils;
@@ -76,6 +74,9 @@ public class UsersLogin {
     }
 
     //client login
+
+    @CrossOrigin(origins = "http://localhost:4200/login")
+
     @PostMapping("/clientLogin")
     public ResponseEntity<?> LoginClient(@Valid @RequestBody LoginRequest loginRequest) {
 
@@ -102,6 +103,37 @@ public class UsersLogin {
                     userDetails.getEmail(),
                     roles.toString()));
         }
+        return null;
+    }
+
+    @PostMapping("/adminSignin")
+    public ResponseEntity<?> authenticateUserAdmin(@Valid @RequestBody LoginRequest loginRequest) {
+
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = jwtUtils.generateJwtToken(authentication);
+
+        List<String> roleAuthentification = authentication.getAuthorities().stream()
+                .map(item -> item.getAuthority())
+                .collect(Collectors.toList());
+
+
+        if (roleAuthentification.get(0).contentEquals("ROLE_ADMIN")){
+            AdminDetails userDetails = (AdminDetails) authentication.getPrincipal();
+            List<String> roles = userDetails.getAuthorities().stream()
+                    .map(item -> item.getAuthority())
+                    .collect(Collectors.toList());
+
+            return  ResponseEntity.ok(new JwtResponse(jwt,
+                    userDetails.getId(),
+                    userDetails.getUsername(),
+                    userDetails.getEmail(),
+                    roles.toString()));
+
+        }
+
         return null;
     }
 }
