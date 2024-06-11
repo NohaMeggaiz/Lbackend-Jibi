@@ -211,5 +211,13 @@ public class AdminService {
     }
 
 
+    public void changePassword(String uid, String newPassword) {
+        Admin agent = adminRepo.findByUsername(uid);
+        String encodedPassword = passwordEncoder.encode(newPassword);
+        // if(agent.getFirstAuth() == true){ agent.setFirstAuth(false);}
+        agent.setPassword(encodedPassword);
+        adminRepo.save(agent);
+    }
+
 
 }

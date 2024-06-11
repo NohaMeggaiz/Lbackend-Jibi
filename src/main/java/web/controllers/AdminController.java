@@ -13,6 +13,7 @@ import web.models.Agent;
 import web.repositories.AdminRepo;
 import web.repositories.AgentRepo;
 import web.request.AgentProjection;
+import web.request.ChangePasswordAgentRequest;
 import web.request.SignupRequest;
 import web.request.SignupRequestAgent;
 import web.service.AdminService;
@@ -139,6 +140,13 @@ public class AdminController {
         } else {
             return ResponseEntity.status(404).body("Error: Admin not found!");
         }
+    }
+
+    @PostMapping("/changePassword")
+    public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordAgentRequest changePasswordRequestAgent) {
+        adminserv.changePassword(changePasswordRequestAgent.getUsername(), changePasswordRequestAgent.getNewPassword());
+
+        return ResponseEntity.ok("password changed successfully for Agent");
     }
 
 
